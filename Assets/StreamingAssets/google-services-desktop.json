@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "375442985645",
+    "project_id": "felicityassgn",
+    "storage_bucket": "felicityassgn.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:375442985645:android:0008b52aa57c2495adec24",
+        "android_client_info": {
+          "package_name": "com.assignment.felicity"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCOub1Xc2stc9dwDQ_gpmN3Ikrd0250ZnY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
