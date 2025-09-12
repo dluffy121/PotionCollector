@@ -8,9 +8,11 @@ namespace PC
         [SerializeField] private Potion _potionPrefab;
         [SerializeField] private int _spawnTimeMS;
         [SerializeField] private Vector2 _spawnArea;
+        [SerializeField] private int _lifetimeMS;
 
         public Potion PotionPrefab => _potionPrefab;
         public int SpawnTime => _spawnTimeMS;
         public Vector2 SpawnArea => _spawnArea;
+        public int Lifetime => _lifetimeMS;
     }
 }

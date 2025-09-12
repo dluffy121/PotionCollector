@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 using UnityEngine;
 
@@ -5,9 +7,19 @@ namespace PC
 {
     public class PotionSpawner : MonoBehaviour
     {
+        private class PotionSpawn
+        {
+            public Potion PotionRef;
+            public CancellationTokenSource CTS = new();
+        }
+
         static PotionSpawner s_instance;
 
         [SerializeField] PotionSpawnerData _spawnerData;
+
+        List<PotionSpawn> _potions = new();
+
+        CancellationTokenSource _spawningCTS;
 
         #region Unity methods
 
@@ -18,6 +30,7 @@ namespace PC
 
         void OnDestroy()
         {
+            StopSpawning();
             s_instance = null;
         }
 
@@ -35,6 +48,11 @@ namespace PC
             s_instance.Internal_SpawnPotion();
         }
 
+        public static void CollectPotion(Potion potion)
+        {
+            s_instance.Internal_CollectPotion(potion);
+        }
+
         public static void DespawnPotion(Potion potionRef)
         {
             s_instance.Internal_DespawnPotion(potionRef);
@@ -44,12 +62,26 @@ namespace PC
 
         async void StartSpawning()
         {
+            _spawningCTS = new CancellationTokenSource();
             while (true)
             {
                 SpawnPotion();
 
-                await Task.Delay(_spawnerData.SpawnTime);
+                await Task.Delay(_spawnerData.SpawnTime, _spawningCTS.Token);
             }
+        }
+
+        void StopSpawning()
+        {
+            _potions.ForEach(ps =>
+            {
+                ps.CTS.Cancel();
+                ps.CTS.Dispose();
+            });
+            _potions.Clear();
+            _spawningCTS.Cancel();
+            _spawningCTS.Dispose();
+            _spawningCTS = null;
         }
 
         void Internal_SpawnPotion()
@@ -67,10 +99,28 @@ namespace PC
             );
 
             Potion potion = Instantiate(_spawnerData.PotionPrefab, transform);
+            PotionSpawn potionSpawn = new() { PotionRef = potion };
+            (potion as IPotionHandle).Initialize(_spawnerData.Lifetime, potionSpawn.CTS.Token);
             potion.transform.SetPositionAndRotation(position, rotation);
+
+            _potions.Add(potionSpawn);
         }
 
-        void Internal_DespawnPotion(Potion potionRef)
+        void Internal_DespawnPotion(Potion potion)
+        {
+            (potion as IPotionHandle).OnDespawn();
+
+            DestroyPotion(potion);
+        }
+
+        void Internal_CollectPotion(Potion potion)
+        {
+            (potion as IPotionHandle).OnCollect();
+
+            DestroyPotion(potion);
+        }
+
+        void DestroyPotion(Potion potionRef)
         {
             Destroy(potionRef.gameObject);
         }

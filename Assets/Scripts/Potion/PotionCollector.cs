@@ -52,7 +52,9 @@ namespace PC
 
             _score++;
 
-            potion.OnCollect();
+            PotionSpawner.CollectPotion(potion);
+
+            ((IPotionHandle)potion).OnCollect();
 
             OnCollectPotion?.Invoke(_score);
 
