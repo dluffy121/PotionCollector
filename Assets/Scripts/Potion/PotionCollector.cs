@@ -9,7 +9,7 @@ namespace PC
         [SerializeField] private Camera _mainCamera;
         [SerializeField] private LayerMask _potionLayer;
 
-        public static event Action<int> OnCollectPotion;
+        public event Action<int> OnCollectPotion;
 
         private int _score = 0;
 
@@ -17,6 +17,8 @@ namespace PC
         {
             if (_mainCamera == null)
                 _mainCamera = Camera.main;
+
+            GameManager.RegisterPlayer(this);
         }
 
         private void Update()
@@ -52,13 +54,9 @@ namespace PC
 
             _score++;
 
-            PotionSpawner.CollectPotion(potion);
-
-            ((IPotionHandle)potion).OnCollect();
-
             OnCollectPotion?.Invoke(_score);
 
-            PotionSpawner.DespawnPotion(potion);
+            PotionSpawner.CollectPotion(potion);
         }
     }
 }

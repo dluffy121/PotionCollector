@@ -122,6 +122,13 @@ namespace PC
 
         void DestroyPotion(Potion potionRef)
         {
+            for (int i = _potions.Count - 1; i >= 0; i--)
+            {
+                if (_potions[i].PotionRef != potionRef)
+                    continue;
+
+                _potions.RemoveAt(i);
+            }
             Destroy(potionRef.gameObject);
         }
     }
