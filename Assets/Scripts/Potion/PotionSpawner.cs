@@ -127,6 +127,8 @@ namespace PC
                 if (_potions[i].PotionRef != potionRef)
                     continue;
 
+                _potions[i].CTS.Cancel();
+                _potions[i].CTS.Dispose();
                 _potions.RemoveAt(i);
             }
             Destroy(potionRef.gameObject);
