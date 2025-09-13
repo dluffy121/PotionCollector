@@ -6,6 +6,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Firebase;
 using Firebase.Database;
+using PC.Events;
 using UnityEngine;
 
 namespace PC
@@ -28,17 +29,21 @@ namespace PC
         {
             s_instance = this;
             InitializeFirebase();
-            Internal_ResetSave();
+            ResetSave();
         }
 
         void OnEnable()
         {
-            GameManager.OnScoreUpdate += UpdateScore;
+            GameEventSystem.OnGameStarted += OnStartGame;
+            GameEventSystem.OnGameEnded += OnEndGame;
+            GameEventSystem.OnScoreUpdated += OnUpdateScore;
         }
 
         private void OnDisable()
         {
-            GameManager.OnScoreUpdate -= UpdateScore;
+            GameEventSystem.OnGameStarted -= OnStartGame;
+            GameEventSystem.OnGameEnded -= OnEndGame;
+            GameEventSystem.OnScoreUpdated -= OnUpdateScore;
         }
 
         private void OnApplicationPause(bool isPaused)
@@ -49,7 +54,7 @@ namespace PC
             // ensure session is saved if app is paused
             // user may never return, or app could be cleared from memory if not resumed
             // hence this as fallback
-            // EndSession(false);
+            EndSession(false);
         }
 
         private void OnApplicationQuit()
@@ -69,30 +74,14 @@ namespace PC
         public static string CurrentPlayerName
             => s_instance._currentSessionSave.PlayerName;
 
-        public static void StartSession()
-            => s_instance.Internal_StartSession();
-
-        public static void EndSession(bool resetSave = true)
-        {
-            if (s_instance._currentSessionSave == null
-                || s_instance._currentSessionSave.StartTime == default)
-                return;
-            s_instance.Internal_EndSession();
-            if (resetSave)
-                s_instance.Internal_ResetSave();
-        }
-
-        public static int GetCurrentMaxScore()
+        public static int CurrentScore
             => s_instance._currentSessionSave.Score;
 
         public static void SetPlayerName(string playerName)
             => s_instance._currentSessionSave.PlayerName = playerName;
 
-        public static void UpdateScore(int score)
-            => s_instance.Internal_UpdateScore(score);
-
-        public static Task<string> GetLeaderboardString(CancellationToken token = default)
-            => s_instance.FetchLeaderboard(token);
+        public static void FetchLeaderboard(CancellationToken token)
+            => s_instance.Internal_FetchLeaderboard(token);
 
         #endregion
 
@@ -116,25 +105,37 @@ namespace PC
             }
         }
 
-        void Internal_StartSession()
+        void OnStartGame(GameStartedArgs args)
         {
             _currentSessionSave ??= new();
-            _currentSessionSave.StartTime = DateTime.UtcNow;
+            _currentSessionSave.StartTime = args.Timestamp;
             _currentSessionSave.Score = 0;
         }
 
-        void Internal_EndSession()
+        void OnEndGame(GameEndedArgs args)
         {
-            s_instance._currentSessionSave.EndTime = DateTime.UtcNow;
-            s_instance.SaveSessionData();
+            EndSession();
         }
 
-        void Internal_ResetSave()
+        public void OnUpdateScore(ScoreUpdatedArgs args)
         {
-            s_instance._currentSessionSave = new();
+            UpdateScore(args.NewScore);
         }
 
-        void Internal_UpdateScore(int newScore)
+        void EndSession(bool resetSave = true)
+        {
+            if (_currentSessionSave.StartTime == default)
+                return;
+            _currentSessionSave.EndTime = DateTime.UtcNow;
+            SaveSessionData();
+            if (resetSave)
+                ResetSave();
+        }
+
+        void ResetSave()
+            => _currentSessionSave = new();
+
+        void UpdateScore(int newScore)
            => _currentSessionSave.Score = Mathf.Max(_currentSessionSave.Score, newScore);
 
         async void SaveSessionData()
@@ -143,6 +144,8 @@ namespace PC
 
             try
             {
+                GameEventSystem.DispatchFirebaseSyncStarted(FirebaseOperationType.SaveScore);
+
                 _currentSessionSave.StartTimeStr = _currentSessionSave.StartTime.ToString();
                 _currentSessionSave.EndTimeStr = _currentSessionSave.EndTime.ToString();
 
@@ -153,20 +156,25 @@ namespace PC
                                         .SetRawJsonValueAsync(json);
 
                 Debug.Log($"Session data saved successfully. Player Name: {_currentSessionSave.PlayerName}, Score: {_currentSessionSave.Score}");
+
+                GameEventSystem.DispatchFirebaseSyncCompleted(FirebaseOperationType.SaveScore, true);
             }
             catch (Exception ex)
             {
+                GameEventSystem.DispatchFirebaseSyncCompleted(FirebaseOperationType.SaveScore, false);
                 Debug.LogError($"Failed to save session data:");
                 Debug.LogException(ex);
             }
         }
 
-        async Task<string> FetchLeaderboard(CancellationToken token)
+        async void Internal_FetchLeaderboard(CancellationToken token)
         {
-            if (_databaseReference == null) return string.Empty;
+            if (_databaseReference == null) return;
 
             try
             {
+                GameEventSystem.DispatchFirebaseSyncStarted(FirebaseOperationType.LoadLeaderboard);
+
                 Task<DataSnapshot> leaderboardTask = _databaseReference.Child("scores")
                                                                        .OrderByChild(SCORE_PATH)
                                                                        //    .LimitToLast(5)
@@ -175,33 +183,31 @@ namespace PC
 
                 if (!leaderboardTask.Result.Exists
                     || token.IsCancellationRequested)
-                    return "No leaderboard data found...";
-
-                StringBuilder sb = new();
-                sb.AppendLine($"{"Name",15} {"Score",10} {"Start",25} {"End",25}");
-                sb.AppendLine(new string('-', 100));
+                {
+                    GameEventSystem.DispatchFirebaseSyncCompleted(FirebaseOperationType.LoadLeaderboard, false);
+                    return;
+                }
 
                 IEnumerable<DataSnapshot> children = leaderboardTask.Result.Children.Reverse()
                                                                                     .Take(5);
+
+                List<LeaderboardEntry> entries = new(5);
+
                 foreach (DataSnapshot child in children)
                 {
                     string json = child.GetRawJsonValue();
                     GameSaveData data = JsonUtility.FromJson<GameSaveData>(json);
-                    sb.AppendLine(
-                        $"{data.PlayerName,15} " +
-                        $"{data.Score,10} " +
-                        $"{data.StartTimeStr,25} " +
-                        $"{data.EndTimeStr,25}"
-                    );
+                    entries.Add(new(data.PlayerName, data.Score, data.StartTimeStr, data.EndTimeStr));
                 }
 
-                return sb.ToString();
+                GameEventSystem.DispatchFirebaseSyncCompleted(FirebaseOperationType.LoadLeaderboard, true);
+                GameEventSystem.DispatchLeaderboardLoaded(entries.ToArray());
             }
             catch (Exception ex)
             {
+                GameEventSystem.DispatchFirebaseSyncCompleted(FirebaseOperationType.LoadLeaderboard, false);
                 Debug.LogError("Failed to fetch leaderboard data:");
                 Debug.LogException(ex);
-                return string.Empty;
             }
         }
     }

@@ -1,3 +1,4 @@
+using PC.Events;
 using TMPro;
 using UnityEngine;
 
@@ -10,18 +11,18 @@ namespace PC
 
         void OnEnable()
         {
-            GameManager.OnScoreUpdate += UpdateScore;
+            GameEventSystem.OnScoreUpdated += UpdateScore;
             _nameText.SetText(GameSaveManager.CurrentPlayerName);
         }
 
         void OnDisable()
         {
-            GameManager.OnScoreUpdate -= UpdateScore;
+            GameEventSystem.OnScoreUpdated -= UpdateScore;
         }
 
-        void UpdateScore(int score)
+        void UpdateScore(ScoreUpdatedArgs args)
         {
-            _scoreText.text = $"{score}";
+            _scoreText.text = $"{args.NewScore}";
         }
 
         public void OnClick_ExitBtn()

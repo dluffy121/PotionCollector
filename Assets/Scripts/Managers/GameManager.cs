@@ -1,4 +1,5 @@
 using System;
+using PC.Events;
 using UnityEngine;
 using SceneManager = UnityEngine.SceneManagement.SceneManager;
 
@@ -30,32 +31,30 @@ namespace PC
             s_instance = null;
         }
 
+        void OnApplicationPause(bool pauseStatus)
+        {
+            if (pauseStatus)
+                GameEventSystem.DispatchGamePaused();
+            else
+                GameEventSystem.DispatchGameResumed();
+        }
+
         #endregion
 
         #region Static Members
-
-        public static event Action OnGameStart;
-        public static event Action OnGameEnd;
-        public static event Action<int> OnScoreUpdate;
 
         public static void StartGame()
         {
             AsyncOperation op = SceneManager.LoadSceneAsync(s_instance._gameSceneIndex);
             op.completed += static op =>
             {
-                s_instance._player.OnCollectPotion += OnCollectPotion;
-                GameSaveManager.StartSession();
+                GameEventSystem.DispatchGameStarted(GameSaveManager.CurrentPlayerName + "_" + DateTime.UtcNow.Ticks);
             };
-        }
-
-        private static void OnCollectPotion(int score)
-        {
-            OnScoreUpdate?.Invoke(score);
         }
 
         public static void EndGame()
         {
-            GameSaveManager.EndSession();
+            GameEventSystem.DispatchGameEnded(GameSaveManager.CurrentScore);
             s_instance._player = null;
             SceneManager.LoadSceneAsync(s_instance._mainMenuSceneIndex);
         }

@@ -9,8 +9,6 @@ namespace PC
         [SerializeField] private Camera _mainCamera;
         [SerializeField] private LayerMask _potionLayer;
 
-        public event Action<int> OnCollectPotion;
-
         private int _score = 0;
 
         private void Awake()
@@ -54,7 +52,7 @@ namespace PC
 
             _score++;
 
-            OnCollectPotion?.Invoke(_score);
+            GameEventSystem.DispatchScoreUpdated(_score, 1);
 
             PotionSpawner.CollectPotion(potion);
         }

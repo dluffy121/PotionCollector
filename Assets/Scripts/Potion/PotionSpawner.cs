@@ -5,6 +5,14 @@ using UnityEngine;
 
 namespace PC
 {
+    public enum PotionType
+    {
+        Red,
+        Blue,
+        Green,
+        Golden
+    }
+
     public class PotionSpawner : MonoBehaviour
     {
         private class PotionSpawn
@@ -100,7 +108,7 @@ namespace PC
 
             Potion potion = Instantiate(_spawnerData.PotionPrefab, transform);
             PotionSpawn potionSpawn = new() { PotionRef = potion };
-            (potion as IPotionHandle).Initialize(_spawnerData.Lifetime, potionSpawn.CTS.Token);
+            (potion as IPotionHandle).Initialize(_spawnerData.Lifetime, PotionType.Red, potionSpawn.CTS.Token);
             potion.transform.SetPositionAndRotation(position, rotation);
 
             _potions.Add(potionSpawn);
@@ -116,6 +124,8 @@ namespace PC
         void Internal_CollectPotion(Potion potion)
         {
             (potion as IPotionHandle).OnCollect();
+
+            GameEventSystem.DispatchPotionCollected(potion.PotionType, 1);
 
             DestroyPotion(potion);
         }

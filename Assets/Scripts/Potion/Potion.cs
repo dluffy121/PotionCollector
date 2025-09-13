@@ -1,4 +1,3 @@
-using System;
 using System.Threading;
 using System.Threading.Tasks;
 using UnityEngine;
@@ -7,8 +6,12 @@ namespace PC
 {
     public class Potion : MonoBehaviour, IPotionHandle
     {
-        async void IPotionHandle.Initialize(int lifetime, CancellationToken token)
+        public PotionType PotionType { get; internal set; }
+
+        async void IPotionHandle.Initialize(int lifetime, PotionType potionType, CancellationToken token)
         {
+            PotionType = potionType;
+
             await Task.Delay(lifetime, token);
 
             Despawn();

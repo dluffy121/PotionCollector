@@ -1,4 +1,7 @@
+using System;
+using System.Text;
 using System.Threading;
+using PC.Events;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -13,6 +16,8 @@ namespace PC
 
         CancellationTokenSource _updateLeaderboardCTS;
 
+        #region Unity methods
+
         void Start()
         {
             UpdateLeaderboard();
@@ -24,6 +29,18 @@ namespace PC
             _updateLeaderboardCTS?.Dispose();
             _updateLeaderboardCTS = null;
         }
+
+        void OnEnable()
+        {
+            GameEventSystem.OnLeaderboardLoaded += OnLeaderboardLoaded;
+        }
+
+        void OnDisable()
+        {
+            GameEventSystem.OnLeaderboardLoaded -= OnLeaderboardLoaded;
+        }
+
+        #endregion
 
         #region Interactions
 
@@ -52,12 +69,31 @@ namespace PC
 
         #endregion
 
-        async void UpdateLeaderboard()
+        void UpdateLeaderboard()
         {
-            _updateLeaderboardCTS = new();
-            string leaderboardStr = await GameSaveManager.GetLeaderboardString(_updateLeaderboardCTS.Token);
-            _leaderboardText.SetText(leaderboardStr);
-            Debug.Log("loaded");
+            _updateLeaderboardCTS = new CancellationTokenSource();
+            _leaderboardText.SetText("No leaderboard data found...");
+
+            GameSaveManager.FetchLeaderboard(_updateLeaderboardCTS.Token);
+        }
+
+        void OnLeaderboardLoaded(LeaderboardLoadedArgs args)
+        {
+            StringBuilder sb = new();
+            sb.AppendLine($"{"Name",15} {"Score",10} {"Start",25} {"End",25}");
+            sb.AppendLine(new string('-', 100));
+
+            foreach (LeaderboardEntry entry in args.TopScores)
+            {
+                sb.AppendLine(
+                    $"{entry.PlayerName,15} " +
+                    $"{entry.Score,10} " +
+                    $"{entry.StartTimeStr,25} " +
+                    $"{entry.EndTimeStr,25}"
+                );
+            }
+
+            _leaderboardText.SetText(sb.ToString());
         }
     }
 }
