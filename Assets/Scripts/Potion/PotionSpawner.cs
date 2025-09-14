@@ -1,31 +1,27 @@
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using PC.Events;
 using UnityEngine;
+using UnityEngine.AddressableAssets;
+using UnityEngine.ResourceManagement.AsyncOperations;
+using Random = UnityEngine.Random;
 
 namespace PC
 {
-    public enum PotionType
-    {
-        Red,
-        Blue,
-        Green,
-        Golden
-    }
-
     public class PotionSpawner : MonoBehaviour
     {
         private class PotionSpawn
         {
-            public Potion PotionRef;
             public CancellationTokenSource CTS = new();
+            public AsyncOperationHandle<GameObject> OpHandle;
         }
 
         static PotionSpawner s_instance;
 
         [SerializeField] PotionSpawnerData _spawnerData;
 
-        List<PotionSpawn> _potions = new();
+        Dictionary<Potion, PotionSpawn> _potions = new();
 
         CancellationTokenSource _spawningCTS;
 
@@ -34,6 +30,8 @@ namespace PC
         void Awake()
         {
             s_instance = this;
+
+            GameEventSystem.OnGameStarted += OnGameStarted;
         }
 
         void OnDestroy()
@@ -42,19 +40,9 @@ namespace PC
             s_instance = null;
         }
 
-        void Start()
-        {
-            StartSpawning();
-        }
-
         #endregion
 
         #region Static members
-
-        public static void SpawnPotion()
-        {
-            s_instance.Internal_SpawnPotion();
-        }
 
         public static void CollectPotion(Potion potion)
         {
@@ -68,7 +56,12 @@ namespace PC
 
         #endregion
 
-        async void StartSpawning()
+        void OnGameStarted(GameStartedArgs args)
+        {
+            Internal_StartSpawning();
+        }
+
+        async void Internal_StartSpawning()
         {
             _spawningCTS = new CancellationTokenSource();
             while (true)
@@ -81,18 +74,19 @@ namespace PC
 
         void StopSpawning()
         {
-            _potions.ForEach(ps =>
+            foreach (var ps in _potions)
             {
-                ps.CTS.Cancel();
-                ps.CTS.Dispose();
-            });
+                ps.Value.CTS.Cancel();
+                ps.Value.CTS.Dispose();
+                Addressables.ReleaseInstance(ps.Value.OpHandle);
+            }
             _potions.Clear();
             _spawningCTS.Cancel();
             _spawningCTS.Dispose();
             _spawningCTS = null;
         }
 
-        void Internal_SpawnPotion()
+        async void SpawnPotion()
         {
             Vector3 position = new(
                 Random.Range(-_spawnerData.SpawnArea.x, _spawnerData.SpawnArea.x),
@@ -100,18 +94,29 @@ namespace PC
                 0
             );
 
-            Quaternion rotation = Quaternion.Euler(
-                0,
-                Random.Range(0, 360),
-                0
-            );
+            PotionData potionData = _spawnerData.GetRandomData();
 
-            Potion potion = Instantiate(_spawnerData.PotionPrefab, transform);
-            PotionSpawn potionSpawn = new() { PotionRef = potion };
-            (potion as IPotionHandle).Initialize(_spawnerData.Lifetime, PotionType.Red, potionSpawn.CTS.Token);
-            potion.transform.SetPositionAndRotation(position, rotation);
+            PotionSpawn potionSpawn = new()
+            {
+                OpHandle = Addressables.InstantiateAsync(potionData.prefabReference,
+                                                         position,
+                                                         Quaternion.identity)
+            };
 
-            _potions.Add(potionSpawn);
+            await potionSpawn.OpHandle.Task;
+
+            if (potionSpawn.OpHandle.Status != AsyncOperationStatus.Succeeded)
+            {
+                Debug.LogError($"Failed to spawn potion: {potionData.potionName}");
+                return;
+            }
+
+            Potion potion = potionSpawn.OpHandle.Result.GetComponent<Potion>();
+            (potion as IPotionHandle).Initialize(_spawnerData.Lifetime, potionData, potionSpawn.CTS.Token);
+
+            GameEventSystem.DispatchPotionSpawned(potionData.type, position);
+
+            _potions.Add(potion, potionSpawn);
         }
 
         void Internal_DespawnPotion(Potion potion)
@@ -132,16 +137,17 @@ namespace PC
 
         void DestroyPotion(Potion potionRef)
         {
-            for (int i = _potions.Count - 1; i >= 0; i--)
+            if (!_potions.TryGetValue(potionRef, out PotionSpawn potionSpawn))
             {
-                if (_potions[i].PotionRef != potionRef)
-                    continue;
-
-                _potions[i].CTS.Cancel();
-                _potions[i].CTS.Dispose();
-                _potions.RemoveAt(i);
+                Debug.LogWarning("Trying to despawn a potion that isn't managed by the spawner.");
+                return;
             }
-            Destroy(potionRef.gameObject);
+
+            _potions.Remove(potionRef);
+
+            potionSpawn.CTS.Cancel();
+            potionSpawn.CTS.Dispose();
+            Addressables.ReleaseInstance(potionSpawn.OpHandle);
         }
     }
 }

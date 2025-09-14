@@ -6,11 +6,27 @@ namespace PC
 {
     public class Potion : MonoBehaviour, IPotionHandle
     {
-        public PotionType PotionType { get; internal set; }
+        [SerializeField] Renderer _renderer;
+        [SerializeField] AudioSource _audioSource;
+        ParticleSystem _particleSystem;
 
-        async void IPotionHandle.Initialize(int lifetime, PotionType potionType, CancellationToken token)
+        PotionData _data;
+
+        public PotionType PotionType => _data.type;
+
+        async void IPotionHandle.Initialize(int lifetime, PotionData data, CancellationToken token)
         {
-            PotionType = potionType;
+            _data = data;
+
+            if (data.collectEffect != null)
+            {
+                _particleSystem = Instantiate(data.collectEffect, transform);
+                _particleSystem.Stop();
+            }
+
+            MaterialPropertyBlock propertyBlock = new();
+            propertyBlock.SetColor("_BaseColor", data.potionColor);
+            _renderer.SetPropertyBlock(propertyBlock);
 
             await Task.Delay(lifetime, token);
 
@@ -28,6 +44,15 @@ namespace PC
 
         void IPotionHandle.OnCollect()
         {
+            if (_particleSystem != null)
+            {
+                _particleSystem.transform.parent = null;
+                _particleSystem.Play();
+                Destroy(_particleSystem.gameObject, _particleSystem.main.duration);
+            }
+
+            if (_data.collectSound != null)
+                _audioSource.PlayOneShot(_data.collectSound);
         }
     }
 }

@@ -4,7 +4,7 @@ namespace PC
 {
     internal interface IPotionHandle
     {
-        void Initialize(int lifetime, PotionType potionType, CancellationToken token = default);
+        void Initialize(int lifetime, PotionData data, CancellationToken token = default);
         void OnDespawn();
         void OnCollect();
     }
