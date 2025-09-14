@@ -1,21 +1,22 @@
 {
   "project_info": {
-    "project_number": "375442985645",
-    "project_id": "felicityassgn",
-    "storage_bucket": "felicityassgn.firebasestorage.app"
+    "project_number": "943031256166",
+    "firebase_url": "https://potioncollector-becde-default-rtdb.asia-southeast1.firebasedatabase.app",
+    "project_id": "potioncollector-becde",
+    "storage_bucket": "potioncollector-becde.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:375442985645:android:0008b52aa57c2495adec24",
+        "mobilesdk_app_id": "1:943031256166:android:83bcf1357f05d3185359a7",
         "android_client_info": {
-          "package_name": "com.assignment.felicity"
+          "package_name": "com.felicityassign.potioncollector"
         }
       },
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyCOub1Xc2stc9dwDQ_gpmN3Ikrd0250ZnY"
+          "current_key": "AIzaSyAi_AXLygJvCTjqp0iRPbK1hSjeG7hIFWA"
         }
       ],
       "services": {
