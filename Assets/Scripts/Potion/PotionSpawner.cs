@@ -58,6 +58,7 @@ namespace PC
 
         void OnGameStarted(GameStartedArgs args)
         {
+            GameEventSystem.OnGameStarted -= OnGameStarted;
             Internal_StartSpawning();
         }
 
