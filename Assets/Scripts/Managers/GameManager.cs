@@ -1,5 +1,6 @@
 using System;
-using PC.Events;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using UnityEngine;
 using SceneManager = UnityEngine.SceneManagement.SceneManager;
 
@@ -71,7 +72,7 @@ namespace PC
         private async void PrepareGame()
         {
             await GameSaveManager.Initialize();
-                Initialize();
+            await AddressablesHandler.Initialize();
 
             Initialize();
         }
@@ -79,6 +80,41 @@ namespace PC
         private void Initialize()
         {
             AsyncOperation mainMenuSceneLoadOP = SceneManager.LoadSceneAsync(_mainMenuSceneIndex);
+            mainMenuSceneLoadOP.completed += static async op =>
+            {
+                await s_instance.LoadRemotePotionData();
+                // if games starts before this completes,
+                // it should work fine as the new spawns will update accordingly
+                // can be handled later by blocking Start btn or add loading screen
+            };
+        }
 
+        #region Potions remote updating
+
+        [Header("Potions Remote Update")]
+        [SerializeField] PotionSpawnerData _spawnerData;
+
+        async Task LoadRemotePotionData()
+        {
+            try
+            {
+                List<PotionData> remotePotions = await AddressablesHandler.LoadPotionData();
+                if (remotePotions.Count <= 0)
+                {
+                    Debug.LogWarning("No remote potions found, falling back to local potions");
+                    return;
+                }
+
+                _spawnerData.UpdatePotionDataList(remotePotions);
+                Debug.LogError($"Loaded {remotePotions.Count} potion types from remote catalog");
+            }
+            catch (Exception e)
+            {
+                Debug.LogError($"Failed to load remote potions: {e.Message}");
+                Debug.LogWarning("Falling back to local potions");
+            }
+        }
+
+        #endregion
     }
 }
