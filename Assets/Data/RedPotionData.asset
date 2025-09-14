@@ -1,0 +1,33 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bb28295c50d72fc4482132412ab5032d, type: 3}
+  m_Name: RedPotionData
+  m_EditorClassIdentifier: 
+  potionName: Red Potion
+  description: Some red potion that will do some red stuff, like increase health
+  potency: 30
+  type: 0
+  potionColor: {r: 1, g: 0, b: 0, a: 1}
+  icon: {fileID: 0}
+  prefabReference:
+    m_AssetGUID: 80861d360f91880489598d0b4b5faa93
+    m_SubObjectName: 
+    m_SubObjectType: 
+    m_SubObjectGUID: 
+    m_EditorAssetChanged: 0
+  labels: []
+  duration: 5
+  collectEffect: {fileID: 0}
+  collectSound: {fileID: 0}
+  rotationSpeed: 90
+  bobAmplitude: 0.5
+  bobFrequency: 1
