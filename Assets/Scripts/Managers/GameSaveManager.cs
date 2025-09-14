@@ -28,8 +28,6 @@ namespace PC
         private void Awake()
         {
             s_instance = this;
-            InitializeFirebase();
-            ResetSave();
         }
 
         void OnEnable()
@@ -66,8 +64,6 @@ namespace PC
 
         #region Static Members
 
-        public static event Action OnInitialized;
-
         public static bool IsInitialized
             => s_instance._isInitialized;
 
@@ -77,6 +73,12 @@ namespace PC
         public static int CurrentScore
             => s_instance._currentSessionSave.Score;
 
+        public static async Task Initialize()
+        {
+            await s_instance.InitializeFirebase();
+            s_instance.ResetSave();
+        }
+
         public static void SetPlayerName(string playerName)
             => s_instance._currentSessionSave.PlayerName = playerName;
 
@@ -85,18 +87,15 @@ namespace PC
 
         #endregion
 
-        async void InitializeFirebase()
+        async Task InitializeFirebase()
         {
             try
             {
                 await FirebaseApp.CheckAndFixDependenciesAsync();
-                _databaseReference = FirebaseDatabase.GetInstance("https://potioncollector-becde-default-rtdb.asia-southeast1.firebasedatabase.app/").RootReference;
+                _databaseReference = FirebaseDatabase.DefaultInstance.RootReference;
                 Debug.Log("Firebase initialized successfully");
 
                 _isInitialized = true;
-
-                OnInitialized?.Invoke();
-                OnInitialized = null;
             }
             catch (Exception ex)
             {
