@@ -43,20 +43,22 @@ namespace PC
 
         #region Static Members
 
-        public static void StartGame()
+        public static void StartGameplay()
         {
-            AsyncOperation op = SceneManager.LoadSceneAsync(s_instance._gameSceneIndex);
-            op.completed += static op =>
-            {
-                GameEventSystem.DispatchGameStarted(GameSaveManager.CurrentPlayerName + "_" + DateTime.UtcNow.Ticks);
-            };
+            SceneManager.LoadSceneAsync(s_instance._gameSceneIndex)
+                        .completed += OnGameSceneLoaded;
         }
 
-        public static void EndGame()
+        public static void EndGameplay()
         {
             GameEventSystem.DispatchGameEnded(GameSaveManager.CurrentScore);
             s_instance._player = null;
             SceneManager.LoadSceneAsync(s_instance._mainMenuSceneIndex);
+        }
+
+        private static void OnGameSceneLoaded(AsyncOperation op)
+        {
+            GameEventSystem.DispatchGameStarted(GameSaveManager.CurrentPlayerName + "_" + DateTime.UtcNow.Ticks);
         }
 
         public static void RegisterPlayer(PotionCollector potionCollector)
@@ -66,17 +68,17 @@ namespace PC
 
         #endregion
 
-        private void PrepareGame()
+        private async void PrepareGame()
         {
-            if (GameSaveManager.IsInitialized)
+            await GameSaveManager.Initialize();
                 Initialize();
-            else
-                GameSaveManager.OnInitialized += Initialize;
+
+            Initialize();
         }
 
         private void Initialize()
         {
-            SceneManager.LoadSceneAsync(_mainMenuSceneIndex);
-        }
+            AsyncOperation mainMenuSceneLoadOP = SceneManager.LoadSceneAsync(_mainMenuSceneIndex);
+
     }
 }
