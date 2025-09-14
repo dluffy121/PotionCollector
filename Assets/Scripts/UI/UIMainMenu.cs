@@ -59,7 +59,7 @@ namespace PC
         public void OnClick_StartBtn()
         {
             GameSaveManager.SetPlayerName(_nameInputField.text);
-            GameManager.StartGame();
+            GameManager.StartGameplay();
         }
 
         public void OnClick_RefreshLeaderboard()

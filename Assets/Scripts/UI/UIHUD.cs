@@ -27,7 +27,7 @@ namespace PC
 
         public void OnClick_ExitBtn()
         {
-            GameManager.EndGame();
+            GameManager.EndGameplay();
         }
     }
 }
