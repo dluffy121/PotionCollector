@@ -1,6 +1,10 @@
 # Potion Collector
 
-A simple potion collector game as an assignment for for Felicity Games.
+A simple potion collector game as an assignment for for Felicity Games (Unity 6000.0.54f1)
+
+## Editor Heads up
+1. Some large files are not committed like TextMeshPro imports, Firebase v13.2.0 x86_64 plugins(necessary for editor working). Download from [here](https://developers.google.com/unity/archive#firebase)
+2. Potion materials fallbacks to pink, probably due to addressables play mode set to Android and downloaded from remote 
 
 ## Game
 ### Input
@@ -26,6 +30,13 @@ Remote content i.e. the bundles and catalog files were manually uploaded to http
 
 ## Event System
 **GameEventSystem** acts as custom event system and takes care of the events mentioned throughout the game, acting as a centralized way of listening and firing events.
+1. GameStarted -> listened by GameSaveManager and PotionSpawner
+2. GameEnded -> listened by GameSaveManager
+3. ScoreUpdated -> listened by GameSaveManager and UIHUD
+4. LeaderboardLoaded -> listened by UIMainMenu
+5. Other events as mentioned in the doc didn't need to be listened
+
+All events are dispatched irrespective of their usage, ideally the need for events should arise from design needs or simple intuition
 
 ## Firebase
    ### Setup
