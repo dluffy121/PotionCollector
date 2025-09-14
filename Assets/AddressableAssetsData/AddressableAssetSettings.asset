@@ -1,0 +1,132 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 468a46d0ae32c3544b7d98094e6448a9, type: 3}
+  m_Name: AddressableAssetSettings
+  m_EditorClassIdentifier: 
+  m_DefaultGroup: 0e041db017548734e8e9a84d170eb352
+  m_currentHash:
+    serializedVersion: 2
+    Hash: 00000000000000000000000000000000
+  m_OptimizeCatalogSize: 0
+  m_BuildRemoteCatalog: 1
+  m_BundleLocalCatalog: 0
+  m_CatalogRequestsTimeout: 0
+  m_DisableCatalogUpdateOnStart: 1
+  m_InternalIdNamingMode: 0
+  m_InternalBundleIdMode: 1
+  m_AssetLoadMode: 0
+  m_BundledAssetProviderType:
+    m_AssemblyName: Unity.ResourceManager, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+    m_ClassName: UnityEngine.ResourceManagement.ResourceProviders.BundledAssetProvider
+  m_AssetBundleProviderType:
+    m_AssemblyName: Unity.ResourceManager, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+    m_ClassName: UnityEngine.ResourceManagement.ResourceProviders.AssetBundleProvider
+  m_IgnoreUnsupportedFilesInBuild: 0
+  m_UniqueBundleIds: 0
+  m_EnableJsonCatalog: 1
+  m_NonRecursiveBuilding: 1
+  m_CCDEnabled: 0
+  m_maxConcurrentWebRequests: 3
+  m_UseUWRForLocalBundles: 0
+  m_BundleTimeout: 0
+  m_BundleRetryCount: 0
+  m_BundleRedirectLimit: -1
+  m_SharedBundleSettings: 0
+  m_SharedBundleSettingsCustomGroupIndex: 0
+  m_ContiguousBundles: 1
+  m_StripUnityVersionFromBundleBuild: 0
+  m_DisableVisibleSubAssetRepresentations: 0
+  m_BuiltInBundleNaming: 0
+  mBuiltInBundleCustomNaming: 
+  m_MonoScriptBundleNaming: 0
+  m_CheckForContentUpdateRestrictionsOption: 0
+  m_MonoScriptBundleCustomNaming: 
+  m_RemoteCatalogBuildPath:
+    m_Id: cec19662b30ed9646998d1673e5854fa
+  m_RemoteCatalogLoadPath:
+    m_Id: ab2273eac93636242bbca3f1a316c568
+  m_ContentStateBuildPathProfileVariableName: <default settings path>
+  m_CustomContentStateBuildPath: 
+  m_ContentStateBuildPath: 
+  m_BuildAddressablesWithPlayerBuild: 2
+  m_overridePlayerVersion: '[UnityEditor.PlayerSettings.bundleVersion]'
+  m_GroupAssets:
+  - {fileID: 11400000, guid: 092ccd218fa2c2e4b857c5fd1128f449, type: 2}
+  - {fileID: 11400000, guid: 161befa30ef62ba46949f3165c266df2, type: 2}
+  m_BuildSettings:
+    m_LogResourceManagerExceptions: 1
+    m_BundleBuildPath: Temp/com.unity.addressables/AssetBundles
+  m_ProfileSettings:
+    m_Profiles:
+    - m_InheritedParent: 
+      m_Id: 2125f83631bc5844abc73ac01bd97ac8
+      m_ProfileName: Default
+      m_Values:
+      - m_Id: 479437fbb88f05b45afafda18767b8ca
+        m_Value: '[UnityEngine.AddressableAssets.Addressables.BuildPath]/[BuildTarget]'
+      - m_Id: a2999274a67399a48b95f170a79c27f9
+        m_Value: '{UnityEngine.AddressableAssets.Addressables.RuntimePath}/[BuildTarget]'
+      - m_Id: a68c19353a880a64598612b28b3b8edb
+        m_Value: '[UnityEditor.EditorUserBuildSettings.activeBuildTarget]'
+      - m_Id: ab2273eac93636242bbca3f1a316c568
+        m_Value: <undefined>
+      - m_Id: cec19662b30ed9646998d1673e5854fa
+        m_Value: 'ServerData/[BuildTarget]'
+    - m_InheritedParent: 
+      m_Id: 62c4c67795df76c4f8414e4bd28cacfb
+      m_ProfileName: BunnyNet
+      m_Values:
+      - m_Id: 479437fbb88f05b45afafda18767b8ca
+        m_Value: 'ServerData/[BuildTarget]'
+      - m_Id: a2999274a67399a48b95f170a79c27f9
+        m_Value: https://FelicityAssign-PotionCollector.b-cdn.net/addressables
+      - m_Id: a68c19353a880a64598612b28b3b8edb
+        m_Value: '[UnityEditor.EditorUserBuildSettings.activeBuildTarget]'
+      - m_Id: ab2273eac93636242bbca3f1a316c568
+        m_Value: https://felicityassign-potioncollector.b-cdn.net/addressables
+      - m_Id: cec19662b30ed9646998d1673e5854fa
+        m_Value: 'ServerData/[BuildTarget]'
+    m_ProfileEntryNames:
+    - m_Id: 479437fbb88f05b45afafda18767b8ca
+      m_Name: Local.BuildPath
+      m_InlineUsage: 0
+    - m_Id: a2999274a67399a48b95f170a79c27f9
+      m_Name: Local.LoadPath
+      m_InlineUsage: 0
+    - m_Id: a68c19353a880a64598612b28b3b8edb
+      m_Name: BuildTarget
+      m_InlineUsage: 0
+    - m_Id: ab2273eac93636242bbca3f1a316c568
+      m_Name: Remote.LoadPath
+      m_InlineUsage: 0
+    - m_Id: cec19662b30ed9646998d1673e5854fa
+      m_Name: Remote.BuildPath
+      m_InlineUsage: 0
+    m_ProfileVersion: 1
+  m_LabelTable:
+    m_LabelNames:
+    - default
+    - Potions
+    - PotionsData
+  m_SchemaTemplates: []
+  m_GroupTemplateObjects:
+  - {fileID: 11400000, guid: 034a03915e0feb14aab8ff1e3f526110, type: 2}
+  m_InitializationObjects: []
+  m_CertificateHandlerType:
+    m_AssemblyName: 
+    m_ClassName: 
+  m_ActivePlayerDataBuilderIndex: 2
+  m_DataBuilders:
+  - {fileID: 11400000, guid: 0469bd5d8bd9d1645bf81337615314d5, type: 2}
+  - {fileID: 11400000, guid: cfb97e57ddb38354c9d4926a02dc7834, type: 2}
+  - {fileID: 11400000, guid: 7ff52e853229f9548b7cece04de38d03, type: 2}
+  m_ActiveProfileId: 62c4c67795df76c4f8414e4bd28cacfb

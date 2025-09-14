@@ -1,0 +1,47 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbb281ee3bf0b054c82ac2347e9e782c, type: 3}
+  m_Name: PotionsData
+  m_EditorClassIdentifier: 
+  m_GroupName: PotionsData
+  m_GUID: 3568622bcbaf6cc4f95d46ea4ab7a65e
+  m_SerializeEntries:
+  - m_GUID: 218131bc2edca844b8412c2088fa4885
+    m_Address: PurplePotionData
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - PotionsData
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 42c6b0bba7727214692c93a472f41d96
+    m_Address: RedPotionData
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - PotionsData
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 8f3fde714f644de4caafbcaa929729ce
+    m_Address: GoldPotionData
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - PotionsData
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: fcda44af7005a4143bbb6d65af6b0263
+    m_Address: BluePotionData
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - PotionsData
+    FlaggedDuringContentUpdateRestriction: 0
+  m_ReadOnly: 0
+  m_Settings: {fileID: 11400000, guid: 850e8fce471401b47be75512ef6428d1, type: 2}
+  m_SchemaSet:
+    m_Schemas:
+    - {fileID: 11400000, guid: 4ff740ee415c2cd448077d822b2f3197, type: 2}
+    - {fileID: 11400000, guid: b5ca31226935bea449b36125713df3f8, type: 2}
