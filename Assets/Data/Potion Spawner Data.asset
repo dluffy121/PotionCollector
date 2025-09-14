@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e3852f57307990a4ea1afc6a66b94b20, type: 3}
   m_Name: Potion Spawner Data
   m_EditorClassIdentifier: 
-  _potionPrefab: {fileID: -3573125477573601628, guid: 80861d360f91880489598d0b4b5faa93, type: 3}
+  _potionDataList: []
   _spawnTimeMS: 1000
   _spawnArea: {x: 9, y: 4}
   _lifetimeMS: 5000
