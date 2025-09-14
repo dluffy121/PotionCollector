@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace PC
 {
-    public class Potion : MonoBehaviour, IPotionHandle
+    public class Potion : MonoBehaviour
     {
         [SerializeField] Renderer _renderer;
         [SerializeField] AudioSource _audioSource;
@@ -14,7 +14,7 @@ namespace PC
 
         public PotionType PotionType => _data.type;
 
-        async void IPotionHandle.Initialize(int lifetime, PotionData data, CancellationToken token)
+        internal async void Initialize(int lifetime, PotionData data, CancellationToken token)
         {
             _data = data;
 
@@ -38,11 +38,11 @@ namespace PC
             PotionSpawner.DespawnPotion(this);
         }
 
-        void IPotionHandle.OnDespawn()
+        internal void OnDespawn()
         {
         }
 
-        void IPotionHandle.OnCollect()
+        internal void OnCollect()
         {
             if (_particleSystem != null)
             {

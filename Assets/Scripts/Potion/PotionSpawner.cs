@@ -112,7 +112,7 @@ namespace PC
             }
 
             Potion potion = potionSpawn.OpHandle.Result.GetComponent<Potion>();
-            (potion as IPotionHandle).Initialize(_spawnerData.Lifetime, potionData, potionSpawn.CTS.Token);
+            potion.Initialize(_spawnerData.Lifetime, potionData, potionSpawn.CTS.Token);
 
             GameEventSystem.DispatchPotionSpawned(potionData.type, position);
 
@@ -121,14 +121,14 @@ namespace PC
 
         void Internal_DespawnPotion(Potion potion)
         {
-            (potion as IPotionHandle).OnDespawn();
+            potion.OnDespawn();
 
             DestroyPotion(potion);
         }
 
         void Internal_CollectPotion(Potion potion)
         {
-            (potion as IPotionHandle).OnCollect();
+            potion.OnCollect();
 
             GameEventSystem.DispatchPotionCollected(potion.PotionType, 1);
 
